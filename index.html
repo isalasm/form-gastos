@@ -46,22 +46,22 @@
             <!-- The form will use the GET method to append data to the URL. -->
             <!-- An empty action attribute means it will submit to the current page's URL. -->
             <form id="gastosForm" method="GET" action="">
-                <!-- Amount Field -->
+                <!-- Amount Field - Now disabled from user input -->
                 <div class="mb-3">
-                    <label for="monto" class="form-label">Monto *</label>
-                    <input type="number" class="form-control" id="monto" name="monto" placeholder="Ej: 15000" required>
+                    <label for="ammount" class="form-label">Monto *</label>
+                    <input type="number" class="form-control" id="ammount" name="monto" placeholder="Ej: 15000" required disabled>
                 </div>
 
                 <!-- Description Field -->
                  <div class="mb-3">
-                    <label for="descripcion" class="form-label">Descripción</label>
-                    <input type="text" class="form-control" id="descripcion" name="descripcion" placeholder="Ej: Café con amigos">
+                    <label for="description" class="form-label">Descripción</label>
+                    <input type="text" class="form-control" id="description" name="descripcion" placeholder="Ej: Café con amigos">
                 </div>
 
                 <!-- Dueño (Owner) Field -->
                 <div class="mb-3">
-                    <label for="dueno" class="form-label">Dueño *</label>
-                    <select class="form-select" id="dueno" name="dueno" required>
+                    <label for="owner" class="form-label">Dueño *</label>
+                    <select class="form-select" id="owner" name="dueno" required>
                         <option value="" disabled selected>Seleccione un dueño</option>
                         <option value="Ignacio">Ignacio</option>
                         <option value="Andrea">Andrea</option>
@@ -71,8 +71,8 @@
 
                 <!-- Categoría (Category) Field -->
                 <div class="mb-3">
-                    <label for="categoria" class="form-label">Categoría *</label>
-                    <select class="form-select" id="categoria" name="categoria" required>
+                    <label for="category" class="form-label">Categoría *</label>
+                    <select class="form-select" id="category" name="categoria" required>
                         <option value="" disabled selected>Seleccione una categoría</option>
                         <option value="Comida">Comida</option>
                         <option value="Uber Eats">Uber Eats</option>
@@ -102,23 +102,25 @@
             const urlParams = new URLSearchParams(window.location.search);
 
             // Get the values from the URL parameters by their name.
-            const monto = urlParams.get('monto');
-            const descripcion = urlParams.get('descripcion');
-            const dueno = urlParams.get('dueno');
-            const categoria = urlParams.get('categoria');
+            let monto = urlParams.get('ammount');
+            const descripcion = urlParams.get('description');
+            const dueno = urlParams.get('owner');
+            const categoria = urlParams.get('category');
 
             // Pre-fill the form fields if the corresponding URL parameters exist.
             if (monto) {
-                document.getElementById('monto').value = monto;
+                // If the monto value contains a dot, remove all occurrences.
+                const cleanedMonto = monto.replace(/\./g, '');
+                document.getElementById('ammount').value = cleanedMonto;
             }
             if (descripcion) {
-                document.getElementById('descripcion').value = descripcion;
+                document.getElementById('description').value = descripcion;
             }
             if (dueno) {
-                document.getElementById('dueno').value = dueno;
+                document.getElementById('owner').value = dueno;
             }
             if (categoria) {
-                document.getElementById('categoria').value = categoria;
+                document.getElementById('category').value = categoria;
             }
         };
     </script>
