@@ -59,10 +59,15 @@
                     <label for="date" class="form-label">Fecha *</label>
                     <input type="text" class="form-control" id="date" name="fecha" required disabled>
                 </div>
+                  <!-- Amount Field - Now disabled from user input -->
+                <div class="mb-3">
+                    <label for="currency" class="form-label">Divisa</label>
+                    <input type="text" class="form-control" id="currency" name="divisa" placeholder="CLP" disabled>
+                </div>
                 <!-- Amount Field - Now disabled from user input -->
                 <div class="mb-3">
                     <label for="amount" class="form-label">Monto *</label>
-                    <input type="number" class="form-control" id="amount" name="monto" placeholder="Ej: 15000" required disabled>
+                    <input type="text" class="form-control" id="amount" name="monto" placeholder="Ej: 15000" required disabled>
                 </div>
 
                 <!-- Description Field -->
@@ -119,7 +124,8 @@
             // Get the values from the URL parameters by their name.
             const idParam = urlParams.get('id');
             const dateParam = urlParams.get('date');
-            const amountParam = urlParams.get('ammount'); // Note: 'ammount' is kept for backward compatibility
+            const amountParam = urlParams.get('ammount'); 
+            const currencyParam = urlParams.get('currency'); 
             const descriptionParam = urlParams.get('description');
             const ownerParam = urlParams.get('owner');
             const categoryParam = urlParams.get('category');
@@ -128,13 +134,15 @@
             if (idParam) {
                 document.getElementById('id').value = idParam;
             }
+            if (currencyParam) {
+                document.getElementById('currency').value = currencyParam;
+            }
             if (dateParam) {
                 document.getElementById('date').value = dateParam;
             }
             if (amountParam) {
                 // If the amount value contains a dot, remove all occurrences.
-                const cleanedAmount = amountParam.replace(/\./g, '');
-                document.getElementById('amount').value = cleanedAmount;
+                document.getElementById('amount').value = "$" + amountParam;
             }
             if (descriptionParam) {
                 document.getElementById('description').value = descriptionParam;
@@ -167,13 +175,16 @@
 
                 // Collect the form data into a URLSearchParams object for the GET request.
                 // We manually get values because 'FormData' ignores disabled fields.
+                let ammountValue = document.getElementById('amount').value
+                let cleanedAmmount = ammountValue.replace('$', '').replace(/\./g, '');
                 const params = new URLSearchParams({
                     id: document.getElementById('id').value,
                     date: document.getElementById('date').value,
-                    ammount: document.getElementById('amount').value,
+                    ammount: cleanedAmmount,
                     description: document.getElementById('description').value,
                     owner: document.getElementById('owner').value,
-                    category: document.getElementById('category').value
+                    category: document.getElementById('category').value,
+                    currency: document.getElementById('currency').value
                 });
 
                 const url = gastosForm.action;
