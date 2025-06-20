@@ -184,7 +184,7 @@
                     description: document.getElementById('description').value,
                     owner: document.getElementById('owner').value,
                     category: document.getElementById('category').value,
-                    currency: document.getElementById('currency').value
+                    currency: document.getElementById('currency').value || "-"
                 });
 
                 const url = gastosForm.action;
