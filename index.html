@@ -45,7 +45,11 @@
             <h1 class="text-center">Gastos</h1>
             <!-- The form will use the GET method to append data to the URL. -->
             <!-- An empty action attribute means it will submit to the current page's URL. -->
-            <form id="gastosForm" method="GET" action="">
+            <form id="gastosForm" method="GET" action="https://hook.us2.make.com/48jsvhdw24iv61or11agt7bqvuge4u2w">
+                <div class="mb-3">
+                    <label for="date" class="form-label">Fecha *</label>
+                    <input type="text" class="form-control" id="date" name="fecha" required disabled>
+                </div>
                 <!-- Amount Field - Now disabled from user input -->
                 <div class="mb-3">
                     <label for="ammount" class="form-label">Monto *</label>
@@ -102,12 +106,16 @@
             const urlParams = new URLSearchParams(window.location.search);
 
             // Get the values from the URL parameters by their name.
+            let date = urlParams.get('date');
             let monto = urlParams.get('ammount');
             const descripcion = urlParams.get('description');
             const dueno = urlParams.get('owner');
             const categoria = urlParams.get('category');
 
             // Pre-fill the form fields if the corresponding URL parameters exist.
+            if(date) {
+                document.getElementById('date').value = date;
+            }
             if (monto) {
                 // If the monto value contains a dot, remove all occurrences.
                 const cleanedMonto = monto.replace(/\./g, '');
