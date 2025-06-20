@@ -43,17 +43,26 @@
     <div class="container">
         <div class="form-container">
             <h1 class="text-center">Gastos</h1>
-            <!-- The form will use the GET method to append data to the URL. -->
-            <!-- An empty action attribute means it will submit to the current page's URL. -->
+            
+            <!-- Message container for success/error alerts -->
+            <div id="messageContainer" class="mt-3"></div>
+
+            <!-- The form action and method are now primarily used by the JavaScript below -->
             <form id="gastosForm" method="GET" action="https://hook.us2.make.com/48jsvhdw24iv61or11agt7bqvuge4u2w">
+                <!-- ID Field -->
+                 <div class="mb-3">
+                    <label for="id" class="form-label">ID</label>
+                    <input type="text" class="form-control" id="id" name="id">
+                </div>
+                <!-- Fecha Field -->
                 <div class="mb-3">
                     <label for="date" class="form-label">Fecha *</label>
                     <input type="text" class="form-control" id="date" name="fecha" required disabled>
                 </div>
                 <!-- Amount Field - Now disabled from user input -->
                 <div class="mb-3">
-                    <label for="ammount" class="form-label">Monto *</label>
-                    <input type="number" class="form-control" id="ammount" name="monto" placeholder="Ej: 15000" required disabled>
+                    <label for="amount" class="form-label">Monto *</label>
+                    <input type="number" class="form-control" id="amount" name="monto" placeholder="Ej: 15000" required disabled>
                 </div>
 
                 <!-- Description Field -->
@@ -93,44 +102,115 @@
                 
                 <!-- Submit Button -->
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-primary btn-lg">Enviar Gasto</button>
+                    <button type="submit" id="submitButton" class="btn btn-primary btn-lg">Enviar Gasto</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // This script runs when the window has finished loading.
-        window.onload = function() {
+        // This script runs when the DOM is fully loaded.
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // --- Logic to pre-fill form from URL parameters ---
             // Create a URLSearchParams object to easily access the URL parameters.
             const urlParams = new URLSearchParams(window.location.search);
 
             // Get the values from the URL parameters by their name.
-            let date = urlParams.get('date');
-            let monto = urlParams.get('ammount');
-            const descripcion = urlParams.get('description');
-            const dueno = urlParams.get('owner');
-            const categoria = urlParams.get('category');
+            const dateParam = urlParams.get('id');
+            const dateParam = urlParams.get('date');
+            const amountParam = urlParams.get('ammount'); // Note: 'ammount' is kept for backward compatibility
+            const descriptionParam = urlParams.get('description');
+            const ownerParam = urlParams.get('owner');
+            const categoryParam = urlParams.get('category');
 
             // Pre-fill the form fields if the corresponding URL parameters exist.
-            if(date) {
-                document.getElementById('date').value = date;
+            if (dateParam) {
+                document.getElementById('idid').value = dateParam;
             }
-            if (monto) {
-                // If the monto value contains a dot, remove all occurrences.
-                const cleanedMonto = monto.replace(/\./g, '');
-                document.getElementById('ammount').value = cleanedMonto;
+            if (dateParam) {
+                document.getElementById('date').value = dateParam;
             }
-            if (descripcion) {
-                document.getElementById('description').value = descripcion;
+            if (amountParam) {
+                // If the amount value contains a dot, remove all occurrences.
+                const cleanedAmount = amountParam.replace(/\./g, '');
+                document.getElementById('amount').value = cleanedAmount;
             }
-            if (dueno) {
-                document.getElementById('owner').value = dueno;
+            if (descriptionParam) {
+                document.getElementById('description').value = descriptionParam;
             }
-            if (categoria) {
-                document.getElementById('category').value = categoria;
+            if (ownerParam) {
+                document.getElementById('owner').value = ownerParam;
             }
-        };
+            if (categoryParam) {
+                document.getElementById('category').value = categoryParam;
+            }
+
+            // --- Logic to handle form submission via JavaScript ---
+            const gastosForm = document.getElementById('gastosForm');
+            const submitButton = document.getElementById('submitButton');
+            const messageContainer = document.getElementById('messageContainer');
+
+            gastosForm.addEventListener('submit', function(event) {
+                // Prevent the default form submission behavior.
+                event.preventDefault();
+
+                // Clear any previous messages
+                messageContainer.innerHTML = '';
+                
+                // Disable button and show loading text/spinner
+                submitButton.disabled = true;
+                submitButton.innerHTML = `
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Enviando...
+                `;
+
+                // Collect the form data into a URLSearchParams object for the GET request.
+                // We manually get values because 'FormData' ignores disabled fields.
+                const params = new URLSearchParams({
+                    id: document.getElementById('id').value,
+                    date: document.getElementById('date').value,
+                    ammount: document.getElementById('amount').value,
+                    description: document.getElementById('description').value,
+                    owner: document.getElementById('owner').value,
+                    category: document.getElementById('category').value
+                });
+
+                const url = gastosForm.action;
+                const fullUrl = `${url}?${params.toString()}`;
+
+                // Send the data using the Fetch API.
+                fetch(fullUrl, { method: 'GET' })
+                    .then(response => {
+                        // Check if the request was successful (status code 200-299)
+                        if (response.ok) {
+                            // Display success message
+                            messageContainer.innerHTML = '<div class="alert alert-success">Gasto enviado con éxito. Esta ventana se cerrará en 3 segundos.</div>';
+                            gastosForm.reset(); // Clear the form fields
+
+                            // Close the window after a 3-second delay
+                            setTimeout(() => {
+                                window.close();
+                            }, 3000);
+                        } else {
+                            // If the server responds with an error, create a new error to be caught below.
+                            throw new Error(`Error del servidor: ${response.statusText} (${response.status})`);
+                        }
+                    })
+                    .catch(error => {
+                        // This will catch network errors or the error thrown above.
+                        console.error('Error submitting form:', error);
+                        messageContainer.innerHTML = `<div class="alert alert-danger">Error al enviar el formulario: ${error.message}</div>`;
+                    })
+                    .finally(() => {
+                        // Re-enable the button regardless of success or failure, unless the window will be closed.
+                         if (!messageContainer.innerHTML.includes('success')) {
+                            submitButton.disabled = false;
+                            submitButton.innerHTML = 'Enviar Gasto';
+                        }
+                    });
+            });
+        });
     </script>
     
     <!-- Bootstrap JS Bundle -->
