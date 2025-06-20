@@ -117,7 +117,7 @@
             const urlParams = new URLSearchParams(window.location.search);
 
             // Get the values from the URL parameters by their name.
-            const dateParam = urlParams.get('id');
+            const idParam = urlParams.get('id');
             const dateParam = urlParams.get('date');
             const amountParam = urlParams.get('ammount'); // Note: 'ammount' is kept for backward compatibility
             const descriptionParam = urlParams.get('description');
@@ -125,8 +125,8 @@
             const categoryParam = urlParams.get('category');
 
             // Pre-fill the form fields if the corresponding URL parameters exist.
-            if (dateParam) {
-                document.getElementById('idid').value = dateParam;
+            if (idParam) {
+                document.getElementById('id').value = idParam;
             }
             if (dateParam) {
                 document.getElementById('date').value = dateParam;
